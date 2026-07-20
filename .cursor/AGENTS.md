@@ -23,6 +23,22 @@ When the user asks to create a workflow from `workflow-request.md` (or similar p
 2. Ignore HTML comment blocks (template and example sections).
 3. Follow the workflow protocol below — validate, verify connections, leave the workflow **inactive** unless the user explicitly asks to activate.
 
+## Debug requests
+
+When the user asks to debug a workflow from `debug-request.md` (or similar phrasing):
+
+1. Read [`debug-request.md`](../debug-request.md) and treat the **Active request** section as the source of truth.
+2. Ignore HTML comment blocks (template and example sections).
+3. Read `.cursor/skills/using-n8n-mcp-skills/SKILL.md` and `.cursor/skills/n8n-validation-expert/SKILL.md` before the first MCP call.
+4. **Locate workflow** — `n8n_list_workflows` / `n8n_get_workflow` (use workflow ID if provided; confirm MCP access is enabled on the workflow in n8n Settings).
+5. **Inspect failures** — if execution ID is given: `n8n_executions({ action: "get", id, mode: "error" })`; otherwise list recent errors: `n8n_executions({ action: "list", workflowId, status: "error" })`.
+6. **Trace data** — when mapping or expression issues are suspected: `n8n_executions({ action: "get", id, mode: "filtered", nodeNames: [...], includeInputData: true })`.
+7. **Validate config** — `n8n_validate_workflow({ id })` and `n8n_get_workflow` to check connections and node parameters.
+8. **Fix** — state root cause first; apply fixes via `n8n_update_partial_workflow` only after user confirmation (or when constraints in the request allow it); re-validate; leave the workflow **inactive** unless the user explicitly asks to activate.
+9. **Test** — `n8n_test_workflow` only for webhook/form/chat triggers, and only with user approval when side effects exist (DB writes, emails, external API calls).
+
+Follow existing non-negotiables: secrets via credentials only, copy-before-edit for production workflows, verify the correct n8n instance when multiple are configured.
+
 ## Non-negotiables
 
 1. **Read the relevant skill before any n8n action** — not just before MCP calls. Before writing expressions, configuring nodes, designing workflows, or writing Code, read the matching skill under `.cursor/skills/`.
