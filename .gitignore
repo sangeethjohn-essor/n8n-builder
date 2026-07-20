@@ -1,0 +1,8 @@
+# Local secrets — never commit
+.cursor/mcp.json
+.env
+
+# Safe to commit (examples and specs):
+#   workflow-request.md
+#   .env.example
+#   .cursor/mcp.json.example
